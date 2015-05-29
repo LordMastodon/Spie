@@ -1,6 +1,8 @@
 package spie;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 public class Spie extends JFrame {
 
@@ -8,7 +10,9 @@ public class Spie extends JFrame {
 
     private void addComponentsToPane() {
         JPanel panel = new JPanel();
-
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        setContentPane(panel);
+        setLayout(new BorderLayout());
     }
 
     public Spie(String name) {
