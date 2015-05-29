@@ -1,7 +1,7 @@
 package spie;
-/**
- * Created by student on 5/28/15.
- */
+
+import javax.swing.*;
+
 public class Spie extends JFrame {
 
     //Game vision: A space game where you formalize the most powerful pie.
@@ -13,6 +13,10 @@ public class Spie extends JFrame {
 
     public Spie(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+
     }
 
 }

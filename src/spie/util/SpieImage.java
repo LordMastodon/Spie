@@ -1,8 +1,9 @@
 package spie.util;
 
 import java.awt.*;
+import java.util.ArrayList;
 
-public class SpieImage extends Image {
+public abstract class SpieImage extends Image {
 
     boolean animate = false;
 
@@ -16,19 +17,24 @@ public class SpieImage extends Image {
         return image;
     }
 
-    public void startAnimating(SpieImage... images, int... intervals) {
+    public void startAnimating(ArrayList<SpieImage> images, int... intervals) {
         animate = true;
-        if(images.length != intervals.length) {
+        if (images.size() == intervals.length) {
             throw new IllegalArgumentException("You provided different amounts of arguments.");
         } else {
-            while(animate) {
-                for(int i = 0; i < images.length; i++) {
-                    if(!i < images.length) {
+            while (animate) {
+                for (int i = 0; i < images.size(); i++) {
+                    if (i == images.size()) {
                         i = 0;
                     } else {
-                        image = images[i];
+                        image = images.get(i);
                         image.invokePropertyChange();
-                        Thread.sleep(intervals[i]);
+
+                        try {
+                            Thread.sleep(intervals[i]);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
             }
@@ -42,3 +48,8 @@ public class SpieImage extends Image {
     public void invokePropertyChange() {
         //do some random display image changing here   
     }
+
+    public Graphics getGraphics() {
+        return SpieGraphicsEnvironment.getSpieGraphicsEnvironment().createGraphics(this);
+    }
+}
