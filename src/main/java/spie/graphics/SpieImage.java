@@ -1,4 +1,7 @@
-package spie.util;
+package spie.graphics;
+
+import spie.util.SpieGraphicsEnvironment;
+import spie.util.SpiePoint;
 
 import java.awt.*;
 import java.awt.image.ImageObserver;

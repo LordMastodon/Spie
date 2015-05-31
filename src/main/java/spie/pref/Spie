@@ -1,0 +1,4 @@
+Frame.width = 800
+Frame.height = 600
+#Frame.icon = resources/spieIcon.png
+Frame.title = Spie
