@@ -26,5 +26,6 @@
     <orderEntry type="library" name="batik-squiggle-1.8" level="project" />
     <orderEntry type="library" name="batik-swing-1.8" level="project" />
     <orderEntry type="library" name="batik-gui-util-1.8" level="project" />
+    <orderEntry type="library" name="xmlgraphics-commons-2.0" level="project" />
   </component>
 </module>

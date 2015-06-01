@@ -1,149 +1,86 @@
 package spie;
 
-import org.apache.batik.apps.svgbrowser.Application;
-import org.apache.batik.apps.svgbrowser.JSVGViewerFrame;
-import org.apache.batik.util.resources.ResourceManager;
-import spie.graphics.SpieSVGMaker;
+import org.apache.batik.swing.JSVGCanvas;
+import org.apache.batik.swing.svg.GVTTreeBuilderAdapter;
+import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
+import org.apache.batik.swing.svg.SVGDocumentLoaderAdapter;
+import org.apache.batik.swing.svg.SVGDocumentLoaderEvent;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
-public class Spie implements Application {
-    public static final String UNKNOWN_SCRIPT_TYPE_LOAD_KEY_EXTENSION = ".load";
-    public static final String PROPERTY_USER_HOME = "user.home";
-    public static final String PROPERTY_JAVA_SECURITY_POLICY = "java.security.policy";
-    public static final String POLICY_GRANT_SCRIPT_NETWORK_ACCESS = "grant {\n permission java.net.SocketPermission \"*\", \"listen, connect, resolve, accept\";\n};\n\n";
-    public static final String POLICY_GRANT_SCRIPT_FILE_ACCESS = "grant {\n permission java.io.FilePermission \"<<ALL FILES>>\", \"read\";\n};\n\n";
-    public static final String PREFERENCE_KEY_VISITED_URI_LIST = "preference.key.visited.uri.list.length";
-    public static final String PREFERENCE_KEY_VISITED_URI_LIST_LENGTH = "preference.key.visited.uri.list.length";
-    public static final String URI_SEPARATOR = " ";
-    public static final String SVG_INITIALIZATION = "resources/svgTest.svg";
-    protected String svgInitializationURI;
-    public static final String RESOURCES = "spie.pref.Spie";
-    protected static ResourceBundle bundle = ResourceBundle.getBundle("spie.pref.Spie", Locale.getDefault());
-    protected static ResourceManager resources;
-
-
+public class Spie {
     //Game vision: A space game where you formalize the most powerful pie.
 
-    private void addComponentsToPane() {
-        JPanel panel = new JPanel();
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        setContentPane(panel);
-        setLayout(new BorderLayout());
-    }
-
-    private static void createAndShowGUI() {
-        Spie spie = new Spie("Spie");
-        spie.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        spie.addComponentsToPane();
-
-        spie.setSize(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
-        spie.setVisible(true);
-    }
-
     public static void main(String[] args) {
-        new Spie(args);
+        JFrame f = new JFrame("Spie");
+        Spie spie = new Spie(f);
+
+        f.getContentPane().add(spie.createComponents());
+
+        f.setSize(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+        f.setVisible(true);
     }
 
-    public Spie(String[] strings) {
+    protected JFrame frame;
+    protected JButton button = new JButton("Load...");
+    protected JLabel label = new JLabel();
+    protected JSVGCanvas svgCanvas = new JSVGCanvas();
 
+    public Spie(JFrame f) {
+        frame = f;
     }
 
-    @Override
-    public String getDefaultFontFamily() {
-        return null;
-    }
+    public JComponent createComponents() {
+        final JPanel panel = new JPanel(new BorderLayout());
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-    @Override
-    public boolean isSelectionOverlayXORMode() {
-        return false;
-    }
+        p.add(button);
+        p.add(label);
 
-    @Override
-    public boolean isXMLParserValidating() {
-        return false;
-    }
+        panel.add("North", p);
+        panel.add("Center", svgCanvas);
 
-    @Override
-    public String getMedia() {
-        return null;
-    }
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fc = new JFileChooser(".");
+                int choice = fc.showOpenDialog(panel);
+                if(choice == JFileChooser.APPROVE_OPTION) {
+                    File f = fc.getSelectedFile();
+                    try {
+                        svgCanvas.setURI(f.toURL().toString());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
 
-    @Override
-    public void showPreferenceDialog(JSVGViewerFrame jsvgViewerFrame) {
+        svgCanvas.addSVGDocumentLoaderListener(new SVGDocumentLoaderAdapter() {
+            public void documentLoadingStarted(SVGDocumentLoaderEvent svgDocumentLoaderEvent) {
+                label.setText("Document Loading...");
+            }
 
-    }
+            public void documentLoadingCompleted(SVGDocumentLoaderEvent svgDocumentLoaderEvent) {
+                label.setText("Document Loaded.");
+            }
+        });
 
-    @Override
-    public void openLink(String s) {
+        svgCanvas.addGVTTreeBuilderListener(new GVTTreeBuilderAdapter() {
+            public void gvtBuildStarted(GVTTreeBuilderEvent gvtTreeBuilderEvent) {
+                label.setText("Build Started...");
+            }
 
-    }
+            public void gvtBuildCompleted(GVTTreeBuilderEvent gvtTreeBuilderEvent) {
+                label.setText("Build Done.");
+                frame.pack();
+            }
+        });
 
-    @Override
-    public String getXMLParserClassName() {
-        return null;
-    }
-
-    @Override
-    public String getUserStyleSheetURI() {
-        return null;
-    }
-
-    @Override
-    public int getAllowedExternalResourceOrigin() {
-        return 0;
-    }
-
-    @Override
-    public JSVGViewerFrame createAndShowJSVGViewerFrame() {
-        return null;
-    }
-
-    @Override
-    public Action createExitAction(JSVGViewerFrame jsvgViewerFrame) {
-        return null;
-    }
-
-    @Override
-    public String[] getVisitedURIs() {
-        return new String[0];
-    }
-
-    @Override
-    public int getAllowedScriptOrigin() {
-        return 0;
-    }
-
-    @Override
-    public String getLanguages() {
-        return null;
-    }
-
-    @Override
-    public boolean canLoadScriptType(String s) {
-        return false;
-    }
-
-    @Override
-    public void closeJSVGViewerFrame(JSVGViewerFrame jsvgViewerFrame) {
-
-    }
-
-    @Override
-    public void addVisitedURI(String s) {
-
-    }
-
-    @Override
-    public String getUISpecialization() {
-        return null;
+        return panel;
     }
 }
