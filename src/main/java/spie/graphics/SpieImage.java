@@ -1,72 +1,58 @@
 package spie.graphics;
 
 import spie.util.SpieGraphicsEnvironment;
-import spie.util.SpiePoint;
 
 import java.awt.*;
 import java.awt.image.ImageObserver;
-import java.util.ArrayList;
+import java.awt.image.ImageProducer;
+import java.util.Hashtable;
 
-public abstract class SpieImage extends Image {
+public class SpieImage extends Image {
 
-    private boolean animate = false;
+    Hashtable properties;
 
-    private SpieImage image;
-
-    private SpiePoint spiePoint = new SpiePoint(0, 0);
-
-    public void setImage(SpieImage newImage) {
-        image = newImage;
+    public int getHeight(ImageObserver observer) {
+        return height;
     }
 
-    public SpieImage getImage() {
-        return image;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
-    public SpiePoint getSpiePoint() {
-        return spiePoint;
+    public int getWidth(ImageObserver observer) {
+        return width;
     }
 
-    public void setSpiePoint(int x, int y) {
-        spiePoint = new SpiePoint(x, y);
+    public void setWidth(int width) {
+        this.width = width;
     }
 
-    public void startAnimating(ArrayList<SpieImage> images, int... intervals) {
-        animate = true;
-        if (images.size() == intervals.length) {
-            throw new IllegalArgumentException("You provided different amounts of arguments.");
-        } else {
-            while (animate) {
-                for (int i = 0; i < images.size(); i++) {
-                    if (i == images.size()) {
-                        i = 0;
-                    } else {
-                        image = images.get(i);
-                        image.invokePropertyChange(images.get(i));
-
-                        try {
-                            Thread.sleep(intervals[i]);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public void stopAnimating() {
-        animate = false;
-    }
-
-    public void invokePropertyChange(SpieImage image) {
-        //do some random display image changing here
-        image.getGraphics().drawImage(image, image.getSpiePoint().getX(), image.getSpiePoint().getY(), image.getImageObserver());
-    }
+    int width;
+    int height;
 
     public Graphics getGraphics() {
         return SpieGraphicsEnvironment.getSpieGraphicsEnvironment().createGraphics(this);
     }
 
-    public abstract ImageObserver getImageObserver();
+    public Object getProperty(String name, ImageObserver observer) {
+        return getProperty(name);
+    }
+
+    public Object getProperty(String name) {
+        if (name == null) {
+            throw new NullPointerException("null property name is not allowed");
+        }
+        if (properties == null) {
+            return java.awt.Image.UndefinedProperty;
+        }
+        Object o = properties.get(name);
+        if (o == null) {
+            o = java.awt.Image.UndefinedProperty;
+        }
+        return o;
+    }
+
+    public ImageProducer getSource() {
+        return null;
+    }
 }
